@@ -1,0 +1,2 @@
+export type TypeRef={kind:'named'|'list'|'nonNull';ofType?:TypeRef};
+export async function completeValue(type:TypeRef,value:unknown):Promise<unknown>{if(type.kind==='nonNull'){const result=await completeValue(type.ofType!,value);if(result==null)throw new Error('non-null field resolved to null');return result}if(value==null)return null;if(type.kind==='list'){const values=Array.isArray(value)?value:[value];return Promise.all(values.map(item=>completeValue(type.ofType!,item).catch(()=>null)))}return value}
